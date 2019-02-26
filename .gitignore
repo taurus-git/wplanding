@@ -1,0 +1,9 @@
+*
+.idea
+!.gitignore
+!/wp-content/themes/wplanding/functions.php
+!/wp-content/themes/wplanding/index.php
+
+!*/
+
+
