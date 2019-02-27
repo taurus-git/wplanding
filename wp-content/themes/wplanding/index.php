@@ -22,14 +22,11 @@
                             <div class="line line_3"></div>
                         </div>
                     </a>
-                    <div class="header-list-drop">
-                        <ul class="header-list anchor-list">
-                            <li class="header-list-item"><a class="header-list-link" href="#event-header">Home</a></li>
-                            <li class="header-list-item"><a class="header-list-link" href="#event-main">Agenda</a></li>
-                            <li class="header-list-item"><a class="header-list-link" href="#timeline">Timeline</a></li>
-                            <li class="header-list-item"><a class="header-list-link" href="#event-footer">We are here</a></li>
-                        </ul>
-                    </div>
+                        <?php
+                            wp_nav_menu( [
+                                'theme_location' => 'header-menu',
+                            ] );
+                        ?>
                 </nav>
             </div>
         </div>
