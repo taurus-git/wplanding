@@ -52,3 +52,37 @@ function filter_nav_menu_link_attributes( $atts, $item, $args, $depth ){
 
     return $atts;
 }
+
+//Register custom post types
+add_action('init', 'register_paragraphs_post_type');
+function register_paragraphs_post_type(){
+    register_post_type('paragraph', array(
+        'labels'             => array(
+            'name'               => 'Paragraph', // Основное название типа записи
+            'singular_name'      => 'paragraph', // отдельное название записи типа Book
+            'add_new'            => 'Add new',
+            'add_new_item'       => 'Add new paragraph',
+            'edit_item'          => 'Edit paragraph',
+            'new_item'           => 'New paragraph',
+            'view_item'          => 'Watch paragraph',
+            'search_items'       => 'Find paragraph',
+            'not_found'          =>  'Paragraphs didn\'t find',
+            'not_found_in_trash' => 'No paragraphs in trash',
+            'parent_item_colon'  => '',
+            'menu_name'          => 'Paragraphs'
+
+        ),
+        'menu_icon'           => 'dashicons-welcome-write-blog',
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            =>  array('slug'=>'paragraphs/%paragraphscat%','with_front'=>false, 'pages'=>false, 'feeds'=>false, 'feed'=>false ),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => null,
+        'supports'           => array('custom-fields'),
+    ) );
+}

@@ -2,8 +2,7 @@
         <div class="content">
             <h2>What are we going to talk about?</h2>
             <div class="block-text">
-                <p>Many companies place great visions and goals and pursue them but then fail to meet their deadlines and sometimes drop a project altogether. The need to go to market and deliver results is a constant race against the clock.</p>
-                <p><strong>Hyperion tech’s CEO Stav Zilbershtein shares his experience on scaling from 0-100 team members in less than one year. How to make it work? What are the best practices that can fundamentally change the way your company stands up to its goals?</strong></p>
+                <?php get_template_part('landing-parts/paragraphs'); ?>
             </div>
             <ul class="list-info">
                 <li>
