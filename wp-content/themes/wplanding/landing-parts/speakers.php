@@ -19,9 +19,9 @@ if ($query->have_posts()) {
                     <img width="160" height="160" alt="<?php echo $alt;?>" src="<?php echo $url; ?>">
                 </div>
                 <div class="box-txt">
-                    <h3><?php the_field('name') ?> </h3>
-                    <span><?php the_field('position') ?></span>
-                    <p><?php the_field('theme') ?></p>
+                    <h3><?php the_field('name'); ?></h3>
+                    <span><?php the_field('position'); ?></span>
+                    <p><?php the_field('theme'); ?></p>
                 </div>
             </div>
         <?php

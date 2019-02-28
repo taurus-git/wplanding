@@ -121,3 +121,37 @@ function register_speakers_post_type(){
         'supports'           => array('title', 'custom-fields'),
     ) );
 }
+
+//Timeline
+add_action('init', 'register_timeline_post_type');
+function register_timeline_post_type(){
+    register_post_type('timeline', array(
+        'labels'             => array(
+            'name'               => 'Timeline',
+            'singular_name'      => 'timeline',
+            'add_new'            => 'Add new',
+            'add_new_item'       => 'Add new timeline',
+            'edit_item'          => 'Edit timeline',
+            'new_item'           => 'New timeline',
+            'view_item'          => 'Watch timeline',
+            'search_items'       => 'Find timeline',
+            'not_found'          =>  'Timeline didn\'t find',
+            'not_found_in_trash' => 'No timeline in trash',
+            'parent_item_colon'  => '',
+            'menu_name'          => 'Timeline'
+
+        ),
+        'menu_icon'           => 'dashicons-editor-ol',
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            =>  array('slug'=>'timeline/%timelinecat%','with_front'=>false, 'pages'=>false, 'feeds'=>false, 'feed'=>false ),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => null,
+        'supports'           => array('title', 'custom-fields'),
+    ) );
+}

@@ -45,48 +45,7 @@
             <div class="section-inform">
                 <h3>Timeline</h3>
                 <ul class="timeline-list">
-                    <li>
-                        <div class="box-time">
-                            <span>18:00</span>
-                        </div>
-                        <div class="box-txt">
-                            <strong>Registration</strong>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="box-time">
-                            <span>18:30</span>
-                        </div>
-                        <div class="box-txt">
-                            <strong>Stav Zilbershtein</strong>
-                            <p>CEO Hyperion Tech “Scaling on R&D effectively – Key practices to increase company Synergy and smash your goals”</p>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="box-time">
-                            <span>19:10</span>
-                        </div>
-                        <div class="box-txt">
-                            <strong>Q&A</strong>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="box-time">
-                            <span>19:20</span>
-                        </div>
-                        <div class="box-txt">
-                            <strong>Adam Darmanin</strong>
-                            <p>Conference Chair. Good ol' IT professional.</p>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="box-time">
-                            <span>19:30</span>
-                        </div>
-                        <div class="box-txt">
-                            <strong>Afterparty</strong>
-                        </div>
-                    </li>
+                    <?php get_template_part('landing-parts/timeline'); ?>
                 </ul>
             </div>
         </section>
