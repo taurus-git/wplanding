@@ -54,40 +54,6 @@ function filter_nav_menu_link_attributes( $atts, $item, $args, $depth ){
 }
 
 //Register custom post types
-//Paragraphs
-add_action('init', 'register_paragraphs_post_type');
-function register_paragraphs_post_type(){
-    register_post_type('paragraph', array(
-        'labels'             => array(
-            'name'               => 'Paragraph',
-            'singular_name'      => 'paragraph',
-            'add_new'            => 'Add new',
-            'add_new_item'       => 'Add new paragraph',
-            'edit_item'          => 'Edit paragraph',
-            'new_item'           => 'New paragraph',
-            'view_item'          => 'Watch paragraph',
-            'search_items'       => 'Find paragraph',
-            'not_found'          =>  'Paragraphs didn\'t find',
-            'not_found_in_trash' => 'No paragraphs in trash',
-            'parent_item_colon'  => '',
-            'menu_name'          => 'Paragraphs'
-
-        ),
-        'menu_icon'           => 'dashicons-welcome-write-blog',
-        'public'             => true,
-        'publicly_queryable' => true,
-        'show_ui'            => true,
-        'show_in_menu'       => true,
-        'query_var'          => true,
-        'rewrite'            =>  array('slug'=>'paragraphs/%paragraphscat%','with_front'=>false, 'pages'=>false, 'feeds'=>false, 'feed'=>false ),
-        'capability_type'    => 'post',
-        'has_archive'        => true,
-        'hierarchical'       => false,
-        'menu_position'      => null,
-        'supports'           => array('title', 'custom-fields'),
-    ) );
-}
-
 //Speakers
 add_action('init', 'register_speakers_post_type');
 function register_speakers_post_type(){

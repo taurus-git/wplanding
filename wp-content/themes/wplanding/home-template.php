@@ -1,11 +1,32 @@
 <?php
 /**
- * Template Name: Template
- */
+* Template Name: home-template
+*/
 get_header(); ?>
         <div class="content">
             <h2>What are we going to talk about?</h2>
             <div class="block-text">
+                <?php
+                $args = array(
+                    'posts_per_page' => 2,
+                    'category_name'  => 'paragraph',
+                    'order'          => 'ASC',
+                    'orderby'        => 'name',
+                );
+
+                $query = new WP_Query($args);
+
+                if ( $query->have_posts() ) {
+                    while ( $query->have_posts() ) {
+                        $query->the_post();
+                        echo '<p>' . the_content() . '</p>';
+                    }
+                } else {
+
+                }
+
+                wp_reset_postdata();
+                ?>
             </div>
             <ul class="list-info">
                 <li>
