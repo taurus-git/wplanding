@@ -36,36 +36,7 @@
             <div class="block-speakers">
                 <h2>Speakers</h2>
                 <div class="slick-slider slick-speakers">
-                    <div class="box-speaker">
-                        <div class="box-img">
-                            <img src="<?php bloginfo('template_url') ?>/assets/images/speaker-01.png" width="160" height="160" alt="speaker">
-                        </div>
-                        <div class="box-txt">
-                            <h3>Stav Zilbershtein</h3>
-                            <span>CEO Hyperion Tech</span>
-                            <p>“Scaling on R&D effectively – Key practices to increase company Synergy and smash your goals”</p>
-                        </div>
-                    </div>
-                    <div class="box-speaker">
-                        <div class="box-img">
-                            <img src="<?php bloginfo('template_url') ?>/assets/images/speaker-02.png" width="160" height="160" alt="speaker">
-                        </div>
-                        <div class="box-txt">
-                            <h3>Johan Törnqvist</h3>
-                            <span>CEO Play’n GO</span>
-                            <p>How Innovation is done Play'ngo</p>
-                        </div>
-                    </div>
-                    <div class="box-speaker">
-                        <div class="box-img">
-                            <img src="<?php bloginfo('template_url') ?>/assets/images/speaker-03.png" width="160" height="160" alt="speaker">
-                        </div>
-                        <div class="box-txt">
-                            <h3>Conference Chair</h3>
-                            <span>CEO Play’n GO</span>
-                            <p>Introduction to Scrumday Malta</p>
-                        </div>
-                    </div>
+                    <?php get_template_part('landing-parts/speakers'); ?>
                 </div>
             </div>
         </section>
