@@ -8,7 +8,7 @@ get_header(); ?>
             <div class="block-text">
                 <?php
                 $args = array(
-                    'posts_per_page' => 2,
+                    'posts_per_page' => 10,
                     'category_name'  => 'paragraph',
                     'order'          => 'ASC',
                     'orderby'        => 'name',
