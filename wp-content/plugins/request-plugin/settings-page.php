@@ -69,34 +69,34 @@ function request_field_priority_cb( $args ) {
     $options = get_option( 'request_options' );
     // output the field
 
- /*   $args = array(
-        'posts_per_page' => 10,
-        'post_type'      => 'request',
-        'order'          => 'ASC',
-        'orderby'        => 'name',
-    );
+    /*   $args = array(
+           'posts_per_page' => 10,
+           'post_type'      => 'request',
+           'order'          => 'ASC',
+           'orderby'        => 'name',
+       );
 
-    $query = new WP_Query($args);
+       $query = new WP_Query($args);
 
-    if ( $query->have_posts() ) {
-        while ( $query->have_posts() ) {
-            $query->the_post();
-            $description_field = get_field_object('description');
-            $author_field = get_field_object('author');
-            $priority_field = get_field_object('priority');
+       if ( $query->have_posts() ) {
+           while ( $query->have_posts() ) {
+               $query->the_post();
+               $description_field = get_field_object('description');
+               $author_field = get_field_object('author');
+               $priority_field = get_field_object('priority');
 
-            echo '<h2>' . $description_field['label']. '</h2>';
-            echo '<p>' . the_field('description') . '</p>';
-            echo '<h2>' . $author_field['label']. '</h2>';
-            echo '<p>' . the_field('author') . '</p>';
-            echo '<h2>' . $priority_field['label']. '</h2>';
-            echo '<p>' . the_field('priority') . '</p>';
-        }
-    } else {
+               echo '<h2>' . $description_field['label']. '</h2>';
+               echo '<p>' . the_field('description') . '</p>';
+               echo '<h2>' . $author_field['label']. '</h2>';
+               echo '<p>' . the_field('author') . '</p>';
+               echo '<h2>' . $priority_field['label']. '</h2>';
+               echo '<p>' . the_field('priority') . '</p>';
+           }
+       } else {
 
-    }
+       }
 
-    wp_reset_postdata();*/
+       wp_reset_postdata();*/
     ?>
     <!--<select id="<?php /*echo esc_attr( $args['label_for'] ); */?>"
             data-custom="<?php /*echo esc_attr( $args['request_custom_data'] ); */?>"
@@ -112,7 +112,7 @@ function request_field_priority_cb( $args ) {
             <?php /*esc_html_e( 'Urgent', 'request' ); */?>
         </option>
     </select>-->
-   <!-- <p class="description">
+    <!-- <p class="description">
         <?php /*esc_html_e( 'You take the blue pill and the story ends. You wake in your bed and you believe whatever you want to believe.', 'request' ); */?>
     </p>-->
     <!--<p class="description">
@@ -139,10 +139,10 @@ add_action( 'admin_menu', 'request_options_page' );
 function request_options_page_html() {
 
     $args = array(
-    'posts_per_page' => 10,
-    'post_type'      => 'request',
-    'order'          => 'ASC',
-    'orderby'        => 'name',
+        'posts_per_page' => 10,
+        'post_type'      => 'request',
+        'order'          => 'ASC',
+        'orderby'        => 'name',
     );
 
     $query = new WP_Query($args);
@@ -156,13 +156,13 @@ function request_options_page_html() {
                 $priority_field = get_field_object('priority');
                 ?>
                 <table style="cellspacing="2" border="1" cellpadding="5" width="600"">
-                    <tr>
-                        <th><?php echo 'Title'; ?></th>
-                        <th><?php echo $description_field['label']; ?></th>
-                        <th><?php echo $author_field['label']; ?></th>
-                        <th><?php echo $priority_field['label']; ?></th>
-                        <th><?php echo 'Actions'; ?></th>
-                    </tr>
+                <tr>
+                    <th><?php echo 'Title'; ?></th>
+                    <th><?php echo $description_field['label']; ?></th>
+                    <th><?php echo $author_field['label']; ?></th>
+                    <th><?php echo $priority_field['label']; ?></th>
+                    <th><?php echo 'Actions'; ?></th>
+                </tr>
                 <?php
             } else {
             }
@@ -179,7 +179,7 @@ function request_options_page_html() {
         }
         ?>
         </table>
-    <?php
+        <?php
     }
     wp_reset_postdata();?>
 
@@ -223,15 +223,15 @@ function my_action_javascript() {
 
                 var data = {
                     action: 'my_action',
-                    title,
-                    author,
-                    message,
-                    select,
+                    title: title,
+                    author: author,
+                    message: message,
+                    select: select,
                 };
                 // с версии 2.8 'ajaxurl' всегда определен в админке
                 jQuery.post( ajaxurl, data, function(response) {
-                    alert('Получено с сервера: ' + title + author + message + select);
-            });
+                    alert('Your request sent successful');
+                });
             });
         });
     </script>
@@ -241,10 +241,13 @@ function my_action_javascript() {
 add_action( 'wp_ajax_my_action', 'my_action_callback' );
 function my_action_callback() {
     //вывести информацию в таблицу
-	$whatever = intval( $_POST['whatever'] );
-
-	//$whatever += 10;
-	echo $whatever;
-
-	wp_die(); // выход нужен для того, чтобы в ответе не было ничего лишнего, только то что возвращает функция
+    $post_data = array(
+        'post_author'   => 'author',
+        'post_content' => '123',//message
+        'post_title'    => wp_strip_all_tags( $_POST['title'] ),
+        'post_type' => 'request',
+        'post_status'   => 'publish',
+    );
+    wp_insert_post( $post_data );//вставить в wp пост с массивом данных выше
+    wp_die(); // выход нужен для того, чтобы в ответе не было ничего лишнего, только то что возвращает функция
 }
