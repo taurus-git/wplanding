@@ -81,12 +81,12 @@ function request_field_priority_cb( $args ) {
        if ( $query->have_posts() ) {
            while ( $query->have_posts() ) {
                $query->the_post();
-               $description_field = get_field_object('description');
+               $message_field = get_field_object('message');
                $author_field = get_field_object('author');
                $priority_field = get_field_object('priority');
 
-               echo '<h2>' . $description_field['label']. '</h2>';
-               echo '<p>' . the_field('description') . '</p>';
+               echo '<h2>' . $message_field['label']. '</h2>';
+               echo '<p>' . the_field('message') . '</p>';
                echo '<h2>' . $author_field['label']. '</h2>';
                echo '<p>' . the_field('author') . '</p>';
                echo '<h2>' . $priority_field['label']. '</h2>';
@@ -112,10 +112,10 @@ function request_field_priority_cb( $args ) {
             <?php /*esc_html_e( 'Urgent', 'request' ); */?>
         </option>
     </select>-->
-    <!-- <p class="description">
+    <!-- <p class="message">
         <?php /*esc_html_e( 'You take the blue pill and the story ends. You wake in your bed and you believe whatever you want to believe.', 'request' ); */?>
     </p>-->
-    <!--<p class="description">
+    <!--<p class="message">
         <?php /*esc_html_e( 'You take the red pill and you stay in Wonderland and I show you how deep the rabbit-hole goes.', 'request' ); */?>
     </p>-->
     <?php
@@ -141,41 +141,33 @@ function request_options_page_html() {
     $args = array(
         'posts_per_page' => 10,
         'post_type'      => 'request',
+        'post_status' => 'publish',
         'order'          => 'ASC',
         'orderby'        => 'name',
     );
-
+    ?>
+     <table style="cellspacing="2" border="1" cellpadding="5" width="600"">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Description</th>
+            <th>Priority</th>
+            <th>Actions</th>
+        </tr>
+    <?php
     $query = new WP_Query($args);
-    $i = 0;
     if ($query->have_posts()) {
         while ($query->have_posts()) {
             $query->the_post();
-            if ( $i == 0 ) {
-                $description_field = get_field_object('description');
-                $author_field = get_field_object('author');
-                $priority_field = get_field_object('priority');
-                ?>
-                <table style="cellspacing="2" border="1" cellpadding="5" width="600"">
-                <tr>
-                    <th><?php echo 'Title'; ?></th>
-                    <th><?php echo $description_field['label']; ?></th>
-                    <th><?php echo $author_field['label']; ?></th>
-                    <th><?php echo $priority_field['label']; ?></th>
-                    <th><?php echo 'Actions'; ?></th>
-                </tr>
-                <?php
-            } else {
-            }
             ?>
             <tr>
                 <td><?php echo get_the_title(); ?></td>
-                <td><?php echo the_field('description'); ?></td>
-                <td><?php echo the_field('author'); ?></td>
-                <td><?php echo the_field('priority'); ?></td>
+                <td><?php echo get_field('author'); ?></td>
+                <td><?php echo get_field('message'); ?></td>
+                <td><?php echo get_field('priority'); ?></td>
                 <td><button>Delete</button></td>
             </tr>
             <?php
-            $i++;
         }
         ?>
         </table>
@@ -208,10 +200,10 @@ function request_options_page_html() {
     <?php
 };
 
-//add_action('admin_print_scripts', 'my_action_javascript'); // такое подключение будет работать не всегда
+//add_action('admin_print_scripts', 'add_new_request_javascript'); // такое подключение будет работать не всегда
 //------------запрос с данными (data)
-add_action('admin_print_footer_scripts', 'my_action_javascript', 99);
-function my_action_javascript() {
+add_action('admin_print_footer_scripts', 'add_new_request_javascript', 99);
+function add_new_request_javascript() {
     ?>
     <script>
         jQuery(document).ready(function($) {
@@ -222,32 +214,42 @@ function my_action_javascript() {
                 var select = $("#select-field").val();
 
                 var data = {
-                    action: 'my_action',
-                    title: title,
+                    action: 'add_new_request',
                     author: author,
                     message: message,
+                    title: title,
                     select: select,
                 };
                 // с версии 2.8 'ajaxurl' всегда определен в админке
                 jQuery.post( ajaxurl, data, function(response) {
-                    alert('Your request sent successful');
+                    console.log('Your request sent successful');
                 });
             });
         });
     </script>
     <?php
 }
+
 //--------что нужно делать:
-add_action( 'wp_ajax_my_action', 'my_action_callback' );
-function my_action_callback() {
+add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
+function add_new_request_callback() {
     //вывести информацию в таблицу
     $post_data = array(
-        'post_author'   => 'author',
-        'post_content' => '123',//message
-        'post_title'    => wp_strip_all_tags( $_POST['title'] ),
+        'post_author' => $_POST['author'],//author
+        'message' =>  $_POST['message'],//message
+        'post_title'    => $_POST['title'],
+        'select'    => $_POST['select'],
         'post_type' => 'request',
         'post_status'   => 'publish',
     );
-    wp_insert_post( $post_data );//вставить в wp пост с массивом данных выше
+    $post_id = wp_insert_post( $post_data );//вставить в wp пост с массивом данных выше
+
+    //update author field
+    update_field( 'field_5c7e6fccbd44a', $_POST['author'], $post_id );
+    //update message field
+    update_field( 'field_5c7e6f8bbd449', $_POST['message'], $post_id );
+    //update priority field
+    update_field( 'field_5c7e6fe8bd44b', $_POST['select'], $post_id );
+
     wp_die(); // выход нужен для того, чтобы в ответе не было ничего лишнего, только то что возвращает функция
 }
