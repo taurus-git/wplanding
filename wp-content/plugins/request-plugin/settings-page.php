@@ -1,127 +1,5 @@
 <?php
 /**
- * @internal never define functions inside callbacks.
- * these functions could be run multiple times; this would result in a fatal error.
- */
-
-/**
- * custom option and settings
- */
-function request_settings_init() {
-    // register a new setting for "request" page
-    register_setting( 'request', 'request_options' );
-
-    // register a new section in the "request" page
-    add_settings_section(
-        'request_section_developers',
-        __( 'Add your request', 'request' ),
-        'request_section_developers_cb',
-        'request'
-    );
-
-    // register a new field in the "request_section_developers" section, inside the "request" page
-    add_settings_field(
-        'request_field_priority', // as of WP 4.6 this value is used only internally
-        // use $args' label_for to populate the id inside the callback
-        __( 'Priority', 'request' ),
-        'request_field_priority_cb',
-        'request',
-        'request_section_developers',
-        [
-            'label_for' => 'request_field_priority',
-            'class' => 'request_row',
-            'request_custom_data' => 'custom',
-        ]
-    );
-}
-
-/**
- * register our request_settings_init to the admin_init action hook
- */
-//add_action( 'admin_init', 'request_settings_init' );
-
-/**
- * custom option and settings:
- * callback functions
- */
-
-// developers section cb
-
-// section callbacks can accept an $args parameter, which is an array.
-// $args have the following keys defined: title, id, callback.
-// the values are defined at the add_settings_section() function.
-function request_section_developers_cb( $args ) {
-    ?>
-    <p id="<?php echo esc_attr( $args['id'] ); ?>"><?php esc_html_e( 'Add your request in the form', 'request' ); ?></p>
-    <?php
-}
-
-// pill field cb
-
-// field callbacks can accept an $args parameter, which is an array.
-// $args is defined at the add_settings_field() function.
-// wordpress has magic interaction with the following keys: label_for, class.
-// the "label_for" key value is used for the "for" attribute of the <label>.
-// the "class" key value is used for the "class" attribute of the <tr> containing the field.
-// you can add custom key value pairs to be used inside your callbacks.
-function request_field_priority_cb( $args ) {
-    // get the value of the setting we've registered with register_setting()
-    $options = get_option( 'request_options' );
-    // output the field
-
-    /*   $args = array(
-           'posts_per_page' => 10,
-           'post_type'      => 'request',
-           'order'          => 'ASC',
-           'orderby'        => 'name',
-       );
-
-       $query = new WP_Query($args);
-
-       if ( $query->have_posts() ) {
-           while ( $query->have_posts() ) {
-               $query->the_post();
-               $message_field = get_field_object('message');
-               $author_field = get_field_object('author');
-               $priority_field = get_field_object('priority');
-
-               echo '<h2>' . $message_field['label']. '</h2>';
-               echo '<p>' . the_field('message') . '</p>';
-               echo '<h2>' . $author_field['label']. '</h2>';
-               echo '<p>' . the_field('author') . '</p>';
-               echo '<h2>' . $priority_field['label']. '</h2>';
-               echo '<p>' . the_field('priority') . '</p>';
-           }
-       } else {
-
-       }
-
-       wp_reset_postdata();*/
-    ?>
-    <!--<select id="<?php /*echo esc_attr( $args['label_for'] ); */?>"
-            data-custom="<?php /*echo esc_attr( $args['request_custom_data'] ); */?>"
-            name="request_options[<?php /*echo esc_attr( $args['label_for'] ); */?>]"
-    >
-        <option value="low" <?php /*echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], 'low', false ) ) : ( '' ); */?>>
-            <?php /*esc_html_e( 'Low', 'request' ); */?>
-        </option>
-        <option value="high" <?php /*echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], 'high', false ) ) : ( '' ); */?>>
-            <?php /*esc_html_e( 'High', 'request' ); */?>
-        </option>
-        <option value="urgent" <?php /*echo isset( $options[ $args['label_for'] ] ) ? ( selected( $options[ $args['label_for'] ], 'urgent', false ) ) : ( '' ); */?>>
-            <?php /*esc_html_e( 'Urgent', 'request' ); */?>
-        </option>
-    </select>-->
-    <!-- <p class="message">
-        <?php /*esc_html_e( 'You take the blue pill and the story ends. You wake in your bed and you believe whatever you want to believe.', 'request' ); */?>
-    </p>-->
-    <!--<p class="message">
-        <?php /*esc_html_e( 'You take the red pill and you stay in Wonderland and I show you how deep the rabbit-hole goes.', 'request' ); */?>
-    </p>-->
-    <?php
-}
-
-/**
  * top level menu
  */
 function request_options_page() {
@@ -136,17 +14,18 @@ function request_options_page() {
 }
 add_action( 'admin_menu', 'request_options_page' );
 
+//view queries in table on settings page
 function request_options_page_html() {
 
     $args = array(
-        'posts_per_page' => 10,
+        'posts_per_page' => 20,
         'post_type'      => 'request',
         'post_status' => 'publish',
         'order'          => 'ASC',
-        'orderby'        => 'name',
+        'orderby'        => 'modified',
     );
     ?>
-     <table style="cellspacing="2" border="1" cellpadding="5" width="600"">
+     <table id="requestTable" style="cellspacing="2" border="1" cellpadding="5" width="600"">
         <tr>
             <th>Title</th>
             <th>Author</th>
@@ -160,12 +39,12 @@ function request_options_page_html() {
         while ($query->have_posts()) {
             $query->the_post();
             ?>
-            <tr>
+            <tr <?php get_the_ID(); ?>>
                 <td><?php echo get_the_title(); ?></td>
                 <td><?php echo get_field('author'); ?></td>
                 <td><?php echo get_field('message'); ?></td>
                 <td><?php echo get_field('priority'); ?></td>
-                <td><button>Delete</button></td>
+                <td><button class="deleteQueryButton">Delete</button></td>
             </tr>
             <?php
         }
@@ -194,20 +73,21 @@ function request_options_page_html() {
                     <option value="2">Urgent</option>
                 </select>
             </div>
-            <input id="submit-form-button" type="submit" value="Add Queries">
+            <button id="submitFormButton" value="Add Queries" type='button'>Add Queries</button>
         </form>
+
     </div>
     <?php
 };
 
-//add_action('admin_print_scripts', 'add_new_request_javascript'); // такое подключение будет работать не всегда
-//------------запрос с данными (data)
-add_action('admin_print_footer_scripts', 'add_new_request_javascript', 99);
-function add_new_request_javascript() {
-    ?>
+//------------add request(data) to db
+//------------remove request(data) from db
+add_action('admin_print_footer_scripts', 'add_new_request_javascript');
+function add_new_request_javascript() {?>
     <script>
         jQuery(document).ready(function($) {
-            $("#submit-form-button").click(function () {
+            $("#submitFormButton").click(function () {
+
                 var title = $("#title-field").val();
                 var author = $("#author-field").val();
                 var message = $("#message-field").val();
@@ -220,23 +100,78 @@ function add_new_request_javascript() {
                     title: title,
                     select: select,
                 };
-                // с версии 2.8 'ajaxurl' всегда определен в админке
+
                 jQuery.post( ajaxurl, data, function(response) {
-                    console.log('Your request sent successful');
+                    alert('Your request sent successful');
+                    $('#requestTable tr:last').after(
+                        '<tr>' +
+                            '<td>' +  title + '</td>' +
+                            '<td>' +  $("#author-field").val() + '</td>' +
+                            '<td>' +  $("#message-field").val() + '</td>' +
+                            '<td>' +  $("#select-field").val() + '</td>' +
+                            '<td><button class="deleteQueryButton">Delete</button></td>' +
+                        '</tr>');
                 });
             });
+
+            //remove
+            $(".deleteQueryButton").click(function() {
+
+                var id = $(this).data('id');
+                var nonce = $(this).data('nonce');
+                var post = $(this).parents('.post:first');
+                $.ajax({
+                    type: 'post',
+                    url: 'admin-ajax.php',
+                    data: {
+                        action: 'my_delete_post',
+                        nonce: nonce,
+                        id: id
+                    },
+                    success: function( result ) {
+                        if( result == 'success' ) {
+                            post.fadeOut( function(){
+                                post.remove();
+                            });
+                        }
+                    }
+                })
+                return false;
+            });
+
         });
     </script>
     <?php
 }
 
-//--------что нужно делать:
+
+add_action( 'wp_ajax_my_delete_post', 'my_delete_post' );
+function my_delete_post(){
+
+    $permission = check_ajax_referer( 'my_delete_post_nonce', 'nonce', false );
+    if( $permission == false ) {
+        echo 'error';
+    }
+    else {
+        wp_delete_post( $_REQUEST['id'] );
+        echo 'success';
+    }
+
+    die();
+}
+
+
+
+
+
+
+
+//--------сохраниьт данные:
 add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
 function add_new_request_callback() {
-    //вывести информацию в таблицу
     $post_data = array(
-        'post_author' => $_POST['author'],//author
-        'message' =>  $_POST['message'],//message
+        'post_author' => $_POST['author'],
+        'message' =>  $_POST['message'],
         'post_title'    => $_POST['title'],
         'select'    => $_POST['select'],
         'post_type' => 'request',
@@ -251,5 +186,5 @@ function add_new_request_callback() {
     //update priority field
     update_field( 'field_5c7e6fe8bd44b', $_POST['select'], $post_id );
 
-    wp_die(); // выход нужен для того, чтобы в ответе не было ничего лишнего, только то что возвращает функция
+    wp_die();
 }
