@@ -39,7 +39,7 @@ function request_options_page_html() {
         while ($query->have_posts()) {
             $query->the_post();
             ?>
-            <tr <?php get_the_ID(); ?>>
+            <tr  class="request-row" id="<?php the_ID(); ?>">
                 <td><?php echo get_the_title(); ?></td>
                 <td><?php echo get_field('author'); ?></td>
                 <td><?php echo get_field('message'); ?></td>
@@ -104,11 +104,11 @@ function add_new_request_javascript() {?>
                 jQuery.post( ajaxurl, data, function(response) {
                     alert('Your request sent successful');
                     $('#requestTable tr:last').after(
-                        '<tr>' +
+                        '<tr class="request-row">' +
                             '<td>' +  title + '</td>' +
-                            '<td>' +  $("#author-field").val() + '</td>' +
-                            '<td>' +  $("#message-field").val() + '</td>' +
-                            '<td>' +  $("#select-field").val() + '</td>' +
+                            '<td>' +  author + '</td>' +
+                            '<td>' +  message + '</td>' +
+                            '<td>' +  select + '</td>' +
                             '<td><button class="deleteQueryButton">Delete</button></td>' +
                         '</tr>');
                 });
@@ -117,26 +117,17 @@ function add_new_request_javascript() {?>
             //remove
             $(".deleteQueryButton").click(function() {
 
-                var id = $(this).data('id');
-                var nonce = $(this).data('nonce');
-                var post = $(this).parents('.post:first');
-                $.ajax({
-                    type: 'post',
-                    url: 'admin-ajax.php',
-                    data: {
-                        action: 'my_delete_post',
-                        nonce: nonce,
-                        id: id
-                    },
-                    success: function( result ) {
-                        if( result == 'success' ) {
-                            post.fadeOut( function(){
-                                post.remove();
-                            });
-                        }
-                    }
-                })
-                return false;
+                var post = $(this).closest('.request-row');
+                var id = post.attr('id');
+                var data = {
+                     action: 'my_delete_post',
+                     id: id,
+                };
+
+                jQuery.post( ajaxurl, data, function(response) {
+                    alert('Your request deleted');
+                    post.remove();
+                });
             });
 
         });
@@ -144,29 +135,15 @@ function add_new_request_javascript() {?>
     <?php
 }
 
-
-add_action( 'wp_ajax_my_delete_post', 'my_delete_post' );
-function my_delete_post(){
-
-    $permission = check_ajax_referer( 'my_delete_post_nonce', 'nonce', false );
-    if( $permission == false ) {
-        echo 'error';
-    }
-    else {
-        wp_delete_post( $_REQUEST['id'] );
-        echo 'success';
-    }
-
+//-------delete data
+add_action( 'wp_ajax_my_delete_post', 'my_delete_post_callback' );
+function my_delete_post_callback(){
+    $id_post = $_POST['id'];
+    wp_delete_post( $id_post, 'false');
     die();
 }
 
-
-
-
-
-
-
-//--------сохраниьт данные:
+//--------send data:
 add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
 function add_new_request_callback() {
     $post_data = array(
@@ -176,8 +153,9 @@ function add_new_request_callback() {
         'select'    => $_POST['select'],
         'post_type' => 'request',
         'post_status'   => 'publish',
+        'id_post' => $_POST['id'],
     );
-    $post_id = wp_insert_post( $post_data );//вставить в wp пост с массивом данных выше
+    $post_id = wp_insert_post( $post_data );
 
     //update author field
     update_field( 'field_5c7e6fccbd44a', $_POST['author'], $post_id );
