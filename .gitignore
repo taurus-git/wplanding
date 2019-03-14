@@ -11,10 +11,10 @@
 !/wp-content/themes/wplanding/landing-parts/timeline.php
 !/wp-content/plugins/shortcode-plugin/shortcode-plugin.php
 !/wp-content/plugins/request-plugin/
-!/wp-content/plugins/request-plugin/request-plugin.php
 !/wp-content/plugins/request-plugin/settings-page.php
-!/wp-content/plugins/request-plugin/includes/activate.php
+!/wp-content/plugins/request-plugin/request-plugin.php
 !/wp-content/plugins/request-plugin/includes/init.php
+!/wp-content/plugins/request-plugin/functions.js
 !*/
 
 

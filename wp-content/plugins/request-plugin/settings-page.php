@@ -20,9 +20,10 @@ function request_options_page_html() {
     $args = array(
         'posts_per_page' => 20,
         'post_type'      => 'request',
-        'post_status' => 'publish',
-        'order'          => 'ASC',
-        'orderby'        => 'modified',
+        'post_status'    => 'publish',
+        'order'          => 'DESC',
+        'orderby'        => 'meta_value_num',
+        'meta_key'       => 'priority',
     );
     ?>
      <table id="requestTable" style="cellspacing="2" border="1" cellpadding="5" width="600"">
@@ -56,7 +57,7 @@ function request_options_page_html() {
 
     <h1>Add your request:</h1>
     <div style="width: 100px">
-        <form action="" method="post">
+        <form id="request-form" action="" method="post">
             <label>Title
                 <input type="text" name="title" id="title-field" value="title" required>
             </label>
@@ -73,74 +74,34 @@ function request_options_page_html() {
                     <option value="2">Urgent</option>
                 </select>
             </div>
-            <button id="submitFormButton" value="Add Queries" type='button'>Add Queries</button>
+            <button id="submitFormButton" value="Add Queries" type='submit'>Add Queries</button>
         </form>
 
     </div>
     <?php
 };
 
+/** Register Scripts. */
+add_action( 'admin_enqueue_scripts', 'add_my_scripts', 100 );
+function add_my_scripts() {
+
+    /** Add JavaScript Functions File */
+    wp_enqueue_script( 'functions-js', plugins_url('functions.js', __FILE__) , array( 'jquery' ), '1.0', true );
+
+    /** Localize Scripts */
+
+    wp_localize_script( 'functions-js', 'ajax_name', array(
+        'url' => admin_url('admin-ajax.php'),
+    ) );
+
+}
+
 //------------add request(data) to db
 //------------remove request(data) from db
 add_action('admin_print_footer_scripts', 'add_new_request_javascript');
-function add_new_request_javascript() {?>
-    <script>
-        jQuery(document).ready(function($) {
-            $("#submitFormButton").click(function () {
-
-                var title = $("#title-field").val();
-                var author = $("#author-field").val();
-                var message = $("#message-field").val();
-                var select = $("#select-field").val();
-
-                var data = {
-                    action: 'add_new_request',
-                    author: author,
-                    message: message,
-                    title: title,
-                    select: select,
-                };
-
-                jQuery.post( ajaxurl, data, function(response) {
-                    alert('Your request sent successful');
-                    $('#requestTable tr:last').after(
-                        '<tr class="request-row">' +
-                            '<td>' +  title + '</td>' +
-                            '<td>' +  author + '</td>' +
-                            '<td>' +  message + '</td>' +
-                            '<td>' +  select + '</td>' +
-                            '<td><button class="deleteQueryButton">Delete</button></td>' +
-                        '</tr>');
-                });
-            });
-
-            //remove
-            $(".deleteQueryButton").click(function() {
-
-                var post = $(this).closest('.request-row');
-                var id = post.attr('id');
-                var data = {
-                     action: 'my_delete_post',
-                     id: id,
-                };
-
-                jQuery.post( ajaxurl, data, function(response) {
-                    alert('Your request deleted');
-                    post.remove();
-                });
-            });
-
-        });
-    </script>
-    <?php
-}
-
-//-------delete data
-add_action( 'wp_ajax_my_delete_post', 'my_delete_post_callback' );
-function my_delete_post_callback(){
-    $id_post = $_POST['id'];
-    wp_delete_post( $id_post, 'false');
-    die();
+function add_new_request_javascript() {
+   /* global $post;
+    echo $post->ID;*/
 }
 
 //--------send data:
@@ -164,5 +125,21 @@ function add_new_request_callback() {
     //update priority field
     update_field( 'field_5c7e6fe8bd44b', $_POST['select'], $post_id );
 
+
+    $return = array(
+        'id_post' => $post_id,
+    );
+    wp_send_json_success( $return, '200' );
+
+
     wp_die();
+}
+
+
+//-------delete data
+add_action( 'wp_ajax_my_delete_post', 'my_delete_post_callback' );
+function my_delete_post_callback(){
+    $id_post = $_POST['id'];
+    wp_delete_post( $id_post, 'false');
+    die();
 }
