@@ -6,12 +6,11 @@
  * Author: admin
  * Author URI: https://google.com
  */
+
 // Includes
-include ( 'includes/activate.php' );
 include ( 'includes/init.php' );
 include ( 'settings-page.php' );
 
 // Hooks
 add_action( 'init', 'request_init' );
-
 

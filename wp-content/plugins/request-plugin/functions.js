@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-    //add
+    //send form data
     $("#request-form").on( "submit", (function ( event ) {
         event.preventDefault();
 
@@ -17,8 +17,6 @@ jQuery(document).ready(function($) {
         };
 
         jQuery.post( ajax_name, data, function(response) {
-            alert('Your request sent successful');
-            console.log(response.data.id_post);
             var requestRow =
                 '<tr class="request-row" id="' + response.data.id_post + '">' +
                     '<td>' +  title + '</td>' +
@@ -28,23 +26,14 @@ jQuery(document).ready(function($) {
                     '<td><button class="deleteQueryButton">Delete</button></td>' +
                 '</tr>';
 
-            if (select === 2){
-                $('#requestTable tr:first').after(
-                    requestRow
-                );
-            } else if (select === 1){
-                $('#requestTable tr:first').after(
-                    requestRow
-                );
-            } else{
-                $('#requestTable tr:last').after(
-                    requestRow
-                );
-            };
-        });
-    })
-    );
-    //remove
+                $(requestRow).insertAfter("#tableHeader");
+
+            });
+
+            alert('Your request sent successful');
+            $("#request-form")[0].reset();
+        }));
+    //remove post
         $('#requestTable').on('click', ".deleteQueryButton", function(){
             var post = $(this).closest('.request-row');
             var id = post.attr('id');
@@ -57,5 +46,6 @@ jQuery(document).ready(function($) {
                 alert('Your request deleted');
                 post.remove();
             });
-        });
+        })
+
 });

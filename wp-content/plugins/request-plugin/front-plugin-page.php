@@ -1,25 +1,75 @@
 <?php
-/**
- * top level menu
- */
-function request_options_page() {
-    // add top level menu page
-    add_menu_page(
-        'Request plugin',
-        'Request Options',
-        'manage_options',
-        'request',
-        'request_options_page_html'
-    );
-    // add sub menu
-    add_submenu_page('request', 'Request plugin', 'Request Options', 'manage_options', 'request');
-    add_submenu_page('request', 'My submenu', 'Option submenu page ', 'manage_options', 'my-secondary-slug', 'request_options_page_html');
+/*
+Template Name: Request template front page
+*/
+wp_head();
+
+/*add_action( 'wp_enqueue_scripts', 'add_my_scripts_for_front', 999);
+function add_my_scripts_for_front() {
+        wp_enqueue_script( 'functions', plugin_dir_path( __FILE__) . 'functions.js', array('jQuery'), '1.0', true );
+}*/
+add_action('wp_ajax_send_myajax_data', 'myajax_data');
+add_action('wp_ajax_nopriv_send_myajax_data', 'myajax_data');
+function myajax_data () {
+    /** Localize Scripts */
+    wp_localize_script('WP-landing-theme-script', 'ajax_name', array(
+        'url' => admin_url('admin-ajax.php'),
+    ));
 }
-add_action( 'admin_menu', 'request_options_page' );
+add_action('wp_footer', 'my_action_javascript', 599); // для фронта
+function my_action_javascript() {
+    ?>
+    <script type="text/javascript" >
+        jQuery(document).ready(function($) {
+            //send form data
+            $("#request-form").on( "submit", (function ( event ) {
+                event.preventDefault();
 
-//view queries in table on settings page
-function request_options_page_html() {
+                var title = $("#title-field").val();
+                var author = $("#author-field").val();
+                var message = $("#message-field").val();
+                var select = $("#select-field").val();
 
+                var data = {
+                    action: 'add_new_request',
+                    author: author,
+                    message: message,
+                    title: title,
+                    select: select,
+                };
+
+                jQuery.post( ajax_name, data, function(response) {
+                    var requestRow =
+                        '<tr class="request-row" id="' + response.data.id_post + '">' +
+                        '<td>' +  title + '</td>' +
+                        '<td>' +  author + '</td>' +
+                        '<td>' +  message + '</td>' +
+                        '<td>' +  select + '</td>' +
+                        '<td><button class="deleteQueryButton">Delete</button></td>' +
+                        '</tr>';
+
+                    $(requestRow).insertAfter("#tableHeader");
+
+                });
+
+                alert('Your request sent successful');
+                $("#request-form")[0].reset();
+            }));
+
+        });
+    </script>
+    <?php
+}
+
+
+?>
+    <script>
+
+    </script>
+<?php
+
+
+//view queries in table on front page
     $args = array(
         'posts_per_page' => 20,
         'post_type'      => 'request',
@@ -29,14 +79,13 @@ function request_options_page_html() {
         'meta_key'       => 'priority',
     );
     ?>
-     <table id="requestTable" style="cellspacing="2" border="1" cellpadding="5" width="600"">
-        <tr id="tableHeader">
-            <th>Title</th>
-            <th>Author</th>
-            <th>Description</th>
-            <th>Priority</th>
-            <th>Actions</th>
-        </tr>
+    <table id="requestTable" style="cellspacing="2" border="1" cellpadding="5" width="600"">
+    <tr id="tableHeader">
+        <th>Title</th>
+        <th>Author</th>
+        <th>Description</th>
+        <th>Priority</th>
+    </tr>
     <?php
     $query = new WP_Query($args);
     if ($query->have_posts()) {
@@ -48,7 +97,6 @@ function request_options_page_html() {
                 <td><?php echo get_field('author'); ?></td>
                 <td><?php echo get_field('message'); ?></td>
                 <td><?php echo get_field('priority'); ?></td>
-                <td><button class="deleteQueryButton">Delete</button></td>
             </tr>
             <?php
         }
@@ -81,25 +129,9 @@ function request_options_page_html() {
         </form>
 
     </div>
-    <?php
-};
+<?php
 
-/** Register Scripts. */
-add_action( 'admin_enqueue_scripts', 'add_my_scripts', 100 );
-function add_my_scripts() {
-
-    /** Add JavaScript Functions File */
-    wp_enqueue_script( 'functions-js', plugins_url('functions.js', __FILE__) , array( 'jquery' ), '1.0', true );
-
-    /** Localize Scripts */
-    wp_localize_script( 'functions-js', 'ajax_name', array(
-        'url' => admin_url('admin-ajax.php'),
-    ) );
-
-}
-
-//--------send data:
-add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
+/*add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
 function add_new_request_callback() {
     $post_data = array(
         'post_author' => $_POST['author'],
@@ -125,26 +157,11 @@ function add_new_request_callback() {
     wp_send_json_success( $return, '200' );
 
     wp_die();
-}
+}*/
 
 
-//-------delete data
-add_action( 'wp_ajax_my_delete_post', 'my_delete_post_callback' );
-function my_delete_post_callback(){
-    $id_post = $_POST['id'];
-    wp_delete_post( $id_post, 'false');
-    die();
-}
 
-//-------front-page
-add_filter('template_include', 'request_template');
-function request_template( $template ) {
 
-    if( is_page('request-page') ){
-        $template = plugin_dir_path( __FILE__ ) .'/front-plugin-page.php';
-    }
-    else{
-        //return $template;
-    };
-    return $template;
-}
+
+wp_footer();
+?>

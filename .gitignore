@@ -13,6 +13,7 @@
 !/wp-content/plugins/request-plugin/
 !/wp-content/plugins/request-plugin/settings-page.php
 !/wp-content/plugins/request-plugin/request-plugin.php
+!/wp-content/plugins/request-plugin/front-plugin-page.php
 !/wp-content/plugins/request-plugin/includes/init.php
 !/wp-content/plugins/request-plugin/functions.js
 !*/
