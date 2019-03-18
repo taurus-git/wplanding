@@ -11,9 +11,6 @@ function request_options_page() {
         'request',
         'request_options_page_html'
     );
-    // add sub menu
-    add_submenu_page('request', 'Request plugin', 'Request Options', 'manage_options', 'request');
-    add_submenu_page('request', 'My submenu', 'Option submenu page ', 'manage_options', 'my-secondary-slug', 'request_options_page_html');
 }
 add_action( 'admin_menu', 'request_options_page' );
 
