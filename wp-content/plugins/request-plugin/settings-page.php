@@ -25,7 +25,7 @@ function request_options_page_html() {
         'post_type'      => 'request',
         'post_status'    => 'publish',
         'order'          => 'DESC',
-        'orderby'        => 'meta_value_num',
+        'orderby'        => 'meta_value_num date',
         'meta_key'       => 'priority',
     );
     ?>
@@ -53,11 +53,12 @@ function request_options_page_html() {
             <?php
         }
         ?>
-        </table>
-        <?php
+    </table>
+    <?php
     }
     wp_reset_postdata();?>
 
+    <!--Request form-->
     <h1>Add your request:</h1>
     <div style="width: 100px">
         <form id="request-form" action="" method="post">
@@ -79,7 +80,6 @@ function request_options_page_html() {
             </div>
             <button id="submitFormButton" value="Add Queries" type='submit'>Add Queries</button>
         </form>
-
     </div>
     <?php
 };
@@ -95,10 +95,9 @@ function add_my_scripts() {
     wp_localize_script( 'functions-js', 'ajax_name', array(
         'url' => admin_url('admin-ajax.php'),
     ) );
-
 }
 
-//--------send data:
+//send data
 add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
 function add_new_request_callback() {
     $post_data = array(
@@ -127,8 +126,7 @@ function add_new_request_callback() {
     wp_die();
 }
 
-
-//-------delete data
+//delete data
 add_action( 'wp_ajax_my_delete_post', 'my_delete_post_callback' );
 function my_delete_post_callback(){
     $id_post = $_POST['id'];
@@ -136,15 +134,12 @@ function my_delete_post_callback(){
     die();
 }
 
-//-------front-page
+//front-page
 add_filter('template_include', 'request_template');
 function request_template( $template ) {
 
     if( is_page('request-page') ){
         $template = plugin_dir_path( __FILE__ ) .'/front-plugin-page.php';
-    }
-    else{
-        //return $template;
     };
     return $template;
 }

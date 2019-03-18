@@ -16,6 +16,7 @@
 !/wp-content/plugins/request-plugin/front-plugin-page.php
 !/wp-content/plugins/request-plugin/includes/init.php
 !/wp-content/plugins/request-plugin/functions.js
+!/wp-content/plugins/request-plugin/functions-front.js
 !*/
 
 

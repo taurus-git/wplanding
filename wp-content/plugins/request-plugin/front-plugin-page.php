@@ -1,84 +1,16 @@
 <?php
-/*
-Template Name: Request template front page
-*/
 wp_head();
 
-/*add_action( 'wp_enqueue_scripts', 'add_my_scripts_for_front', 999);
-function add_my_scripts_for_front() {
-        wp_enqueue_script( 'functions', plugin_dir_path( __FILE__) . 'functions.js', array('jQuery'), '1.0', true );
-}*/
-add_action('wp_ajax_send_myajax_data', 'myajax_data');
-add_action('wp_ajax_nopriv_send_myajax_data', 'myajax_data');
-function myajax_data () {
-    /** Localize Scripts */
-    wp_localize_script('WP-landing-theme-script', 'ajax_name', array(
-        'url' => admin_url('admin-ajax.php'),
-    ));
-}
-add_action('wp_footer', 'my_action_javascript', 599); // для фронта
-function my_action_javascript() {
-    ?>
-    <script type="text/javascript" >
-        jQuery(document).ready(function($) {
-            //send form data
-            $("#request-form").on( "submit", (function ( event ) {
-                event.preventDefault();
-
-                var title = $("#title-field").val();
-                var author = $("#author-field").val();
-                var message = $("#message-field").val();
-                var select = $("#select-field").val();
-
-                var data = {
-                    action: 'add_new_request',
-                    author: author,
-                    message: message,
-                    title: title,
-                    select: select,
-                };
-
-                jQuery.post( ajax_name, data, function(response) {
-                    var requestRow =
-                        '<tr class="request-row" id="' + response.data.id_post + '">' +
-                        '<td>' +  title + '</td>' +
-                        '<td>' +  author + '</td>' +
-                        '<td>' +  message + '</td>' +
-                        '<td>' +  select + '</td>' +
-                        '<td><button class="deleteQueryButton">Delete</button></td>' +
-                        '</tr>';
-
-                    $(requestRow).insertAfter("#tableHeader");
-
-                });
-
-                alert('Your request sent successful');
-                $("#request-form")[0].reset();
-            }));
-
-        });
-    </script>
-    <?php
-}
-
-
-?>
-    <script>
-
-    </script>
-<?php
-
-
 //view queries in table on front page
-    $args = array(
-        'posts_per_page' => 20,
-        'post_type'      => 'request',
-        'post_status'    => 'publish',
-        'order'          => 'DESC',
-        'orderby'        => 'meta_value_num',
-        'meta_key'       => 'priority',
-    );
-    ?>
+$args = array(
+    'posts_per_page' => 20,
+    'post_type'      => 'request',
+    'post_status'    => 'publish',
+    'order'          => 'DESC',
+    'orderby'        => 'meta_value_num date',
+    'meta_key'       => 'priority',
+);
+?>
     <table id="requestTable" style="cellspacing="2" border="1" cellpadding="5" width="600"">
     <tr id="tableHeader">
         <th>Title</th>
@@ -101,13 +33,14 @@ function my_action_javascript() {
             <?php
         }
         ?>
-        </table>
-        <?php
+    </table>
+    <?php
     }
     wp_reset_postdata();?>
 
+    <!--Request form-->
     <h1>Add your request:</h1>
-    <div style="width: 100px">
+    <div style="width: 400px">
         <form id="request-form" action="" method="post">
             <label>Title
                 <input type="text" name="title" id="title-field" value="title" required>
@@ -124,15 +57,28 @@ function my_action_javascript() {
                     <option value="1">High</option>
                     <option value="2">Urgent</option>
                 </select>
+                <button id="submitFormButton" value="Add Queries" type="submit">Add Queries</button>
             </div>
-            <button id="submitFormButton" value="Add Queries" type='submit'>Add Queries</button>
         </form>
-
     </div>
 <?php
 
-/*add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
-function add_new_request_callback() {
+/** Register Scripts. */
+wp_enqueue_script('functions-front', plugins_url('functions-front.js', __FILE__), array('jquery'), '', 'true' );
+
+wp_localize_script( 'functions-front', 'ajax_name', array(
+    'url' => admin_url('admin-ajax.php'),
+) );
+
+//Bootstrap files
+wp_enqueue_style('bootstrap-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css');
+// Add JavaScript Bootstrap Files
+wp_enqueue_script( 'bootstrap-js', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', array( 'jquery'), '1.0', true );
+wp_enqueue_script( 'bootstrap-bundle-js', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js' , array( 'jquery'), '1.0', true );
+
+//send data
+add_action( 'wp_ajax_add_new_request_front', 'add_new_request_callback_front' );
+function add_new_request_callback_front() {
     $post_data = array(
         'post_author' => $_POST['author'],
         'message' =>  $_POST['message'],
@@ -157,11 +103,7 @@ function add_new_request_callback() {
     wp_send_json_success( $return, '200' );
 
     wp_die();
-}*/
-
-
-
-
+}
 
 wp_footer();
 ?>
