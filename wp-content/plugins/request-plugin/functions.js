@@ -17,22 +17,24 @@ jQuery(document).ready(function($) {
         };
 
         jQuery.post( ajax_name, data, function(response) {
-            var requestRow =
-                '<tr class="request-row" id="' + response.data.id_post + '">' +
-                    '<td>' +  title + '</td>' +
-                    '<td>' +  author + '</td>' +
-                    '<td>' +  message + '</td>' +
-                    '<td>' +  select + '</td>' +
-                    '<td><button class="deleteQueryButton">Delete</button></td>' +
-                '</tr>';
+            if (response.success) {
+                var requestRow =
+                    '<tr class="request-row" id="' + response.data.id_post + '">' +
+                        '<td>' +  title + '</td>' +
+                        '<td>' +  author + '</td>' +
+                        '<td>' +  message + '</td>' +
+                        '<td>' +  select + '</td>' +
+                        '<td><button class="deleteQueryButton">Delete</button></td>' +
+                    '</tr>';
 
                 $(requestRow).insertAfter("#tableHeader");
-
-            });
-
-            alert('Your request sent successful');
+                alert('Your request sent successful');
+            } else {
+                alert('Fill out all items in the form');
+            }
             $("#request-form")[0].reset();
-        }));
+        })
+    }));
     //remove post
         $('#requestTable').on('click', ".deleteQueryButton", function(){
             var post = $(this).closest('.request-row');

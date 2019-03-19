@@ -16,35 +16,22 @@ jQuery(document).ready(function($) {
             select: select,
         };
 
-        jQuery.post( ajax_name, data, function(response) {
-            var requestRow =
-                '<tr class="request-row" id="' + response.data.id_post + '">' +
-                '<td>' +  title + '</td>' +
-                '<td>' +  author + '</td>' +
-                '<td>' +  message + '</td>' +
-                '<td>' +  select + '</td>' +
-                '</tr>';
+        jQuery.post( ajax_name, data, function (response) {
+            if (response.success) {
+                var requestRow =
+                    '<tr class="request-row" id="' + response.data.id_post + '">' +
+                        '<td>' + title + '</td>' +
+                        '<td>' + author + '</td>' +
+                        '<td>' + message + '</td>' +
+                        '<td>' + select + '</td>' +
+                    '</tr>';
 
-            $(requestRow).insertAfter("#tableHeader");
-
-        });
-
-        alert('Your request sent successful');
-        $("#request-form")[0].reset();
+                $(requestRow).insertAfter("#tableHeader");
+                alert('Your request sent successful');
+            } else {
+                alert('Fill out all items in the form');
+            }
+            $("#request-form")[0].reset();
+        })
     }));
-    //remove post
-    $('#requestTable').on('click', ".deleteQueryButton", function(){
-        var post = $(this).closest('.request-row');
-        var id = post.attr('id');
-        var data = {
-            action: 'my_delete_post',
-            id: id,
-        };
-
-        jQuery.post( ajax_name, data, function(response) {
-            alert('Your request deleted');
-            post.remove();
-        });
-    })
-
 });

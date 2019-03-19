@@ -36,34 +36,33 @@ function request_options_page_html() {
         </tr>
     <?php
     $query = new WP_Query($args);
-    if ($query->have_posts()) {
-        while ($query->have_posts()) {
-            $query->the_post();
-            ?>
-            <tr  class="request-row" id="<?php the_ID(); ?>">
+    if ($query->have_posts()) :
+        while ($query->have_posts()) :
+            $query->the_post();?>
+            <tr class="request-row" id="<?php the_ID(); ?>">
                 <td><?php echo get_the_title(); ?></td>
                 <td><?php echo get_field('author'); ?></td>
                 <td><?php echo get_field('message'); ?></td>
                 <td><?php echo get_field('priority'); ?></td>
-                <td><button class="deleteQueryButton">Delete</button></td>
+                <td>
+                    <button class="deleteQueryButton">Delete</button>
+                </td>
             </tr>
-            <?php
-        }
-        ?>
+        <?php endwhile; ?>
     </table>
     <?php
-    }
-    wp_reset_postdata();?>
+    endif;
+    wp_reset_postdata(); ?>
 
     <!--Request form-->
     <h1>Add your request:</h1>
     <div style="width: 100px">
         <form id="request-form" action="" method="post">
             <label>Title
-                <input type="text" name="title" id="title-field" value="title" required>
+                <input type="text" name="title" id="title-field" value="title">
             </label>
             <label>Author
-                <input type="text" name="author" id="author-field" value="author" required>
+                <input type="text" name="author" id="author-field" value="author">
             </label>
             <label>Message
                 <textarea name="" id="message-field" cols="30" rows="10"></textarea>
@@ -98,43 +97,45 @@ function add_my_scripts() {
 add_action( 'wp_ajax_add_new_request', 'add_new_request_callback' );
 function add_new_request_callback() {
     $post_data = array(
-        'post_author' => $_POST['author'],
-        'message' =>  $_POST['message'],
         'post_title'    => $_POST['title'],
-        'select'    => $_POST['select'],
         'post_type' => 'request',
         'post_status'   => 'publish',
-        'id_post' => $_POST['id'],
     );
-    $post_id = wp_insert_post( $post_data );
 
-    //update author field
-    update_field( 'field_5c7e6fccbd44a', $_POST['author'], $post_id );
-    //update message field
-    update_field( 'field_5c7e6f8bbd449', $_POST['message'], $post_id );
-    //update priority field
-    update_field( 'field_5c7e6fe8bd44b', $_POST['select'], $post_id );
+    if ( empty( ( $_POST['title'] ) &&
+                ( $_POST['author'] ) &&
+                ( $_POST['message'] ) ) ) {
+        echo "Please fill in all items in the form!";
+        wp_die();
+    } else {
+        $post_id = wp_insert_post( $post_data );
 
-    $return = array(
-        'id_post' => $post_id,
-    );
-    wp_send_json_success( $return, '200' );
+        //update author field
+        update_field( 'field_5c7e6fccbd44a', $_POST['author'], $post_id );
+        //update message field
+        update_field( 'field_5c7e6f8bbd449', $_POST['message'], $post_id );
+        //update priority field
+        update_field( 'field_5c7e6fe8bd44b', $_POST['select'], $post_id );
 
-    wp_die();
+        $return = array(
+            'id_post' => $post_id,
+        );
+        wp_send_json_success( $return, '200' );
+        wp_die();
+    }
 }
 
 //delete data
 add_action( 'wp_ajax_my_delete_post', 'my_delete_post_callback' );
 function my_delete_post_callback(){
     $id_post = $_POST['id'];
-    wp_delete_post( $id_post, 'false');
+    wp_delete_post( $id_post, 'false' );
     die();
 }
 
 //front-page
 add_filter('template_include', 'request_template');
 function request_template( $template ) {
-
     if( is_page('request-page') ){
         $template = plugin_dir_path( __FILE__ ) .'/front-plugin-page.php';
     };
